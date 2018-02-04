@@ -61,7 +61,7 @@ let update msg (model : Model) =
     match msg with
     | ChangeCurrentPost post ->
       Cmd.ofPromise
-        (fetchAsString (sprintf "/api/post_content/%s" post.Id))
+        (fetchAsString (sprintf "/api/post_content/%s/%s" post.FeedId post.Id))
         [] 
         (Ok >> DisplayContent) 
         (Error >> DisplayContent)
