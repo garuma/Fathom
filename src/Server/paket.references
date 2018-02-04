@@ -7,3 +7,4 @@ group Server
   FSharp.Data
   Newtonsoft.Json
   Fable.JsonConverter
+  FSharp.Azure.StorageTypeProvider

@@ -2,7 +2,6 @@ module Client
 
 open Fable.Core
 open Fable.Import
-open Fable.Core.JsInterop
 
 open Elmish
 open Elmish.React
@@ -13,15 +12,13 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch
 
 open Shared
+open Helpers.React
 
-open Fulma
 open Fulma.Layouts
 open Fulma.Elements
-open Fulma.Elements.Form
 open Fulma.Components
 open Fulma.BulmaClasses
 open Fulma.BulmaClasses.Bulma
-open Fable.Import.React
 
 type Model =
   { Posts: Post list
@@ -64,7 +61,7 @@ let update msg (model : Model) =
     match msg with
     | ChangeCurrentPost post ->
       Cmd.ofPromise
-        (fetchAsString (sprintf "/api/post_content/%i" post.Id))
+        (fetchAsString (sprintf "/api/post_content/%s" post.Id))
         [] 
         (Ok >> DisplayContent) 
         (Error >> DisplayContent)
@@ -81,18 +78,12 @@ let menuItem label isActive onclick =
              OnClick onclick ]
        [ str label ] ]
 
-let createPostMenuItem post selectPost =
+let createPostMenuItem (post: Post) selectPost =
   function
   | Some currentPost -> menuItem post.Title (currentPost.Id = post.Id) (fun _ -> selectPost post)
   | None -> menuItem post.Title false (fun _ -> selectPost post)
 
-type [<Pojo>] InnerHtml =
-  { __html: string }
-
-let setInnerHtml (html: string) =
-  DangerouslySetInnerHTML { __html = html }
-
-let showPost post content =
+let showPost (post: Post option) content =
   match (post, content) with
   | (Some p, Some c) -> [ Heading.h2 [] [str p.Title]
                           Content.content [ Content.props [ setInnerHtml c ] ] [ ] ]

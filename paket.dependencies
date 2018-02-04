@@ -8,6 +8,7 @@ group Server
   nuget FSharp.Data
   nuget Fable.JsonConverter
   nuget Newtonsoft.Json
+  nuget FSharp.Azure.StorageTypeProvider
 
   clitool Microsoft.DotNet.Watcher.Tools
 

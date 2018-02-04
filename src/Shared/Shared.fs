@@ -2,10 +2,11 @@ namespace Shared
 
 open System
 
-type PostId = int
+type AtomId = string
 
 type Post =
-  { Id: PostId
+  { Id: AtomId
+    FeedId: AtomId
     Title: string
     Author: string
     Date: DateTime }
