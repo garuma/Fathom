@@ -15,7 +15,11 @@ open Shared
 
 type AtomFeed = XmlProvider<"http://blog.neteril.org/feed.xml">
 
-let clientPath = Path.Combine("..","Client") |> Path.GetFullPath
+let clientPath =
+  [ "client"
+    Path.Combine("..","Client") ]
+  |> List.find System.IO.Directory.Exists
+  |> Path.GetFullPath
 let port = 8085us
 
 let gatherPosts (feed: AtomFeed.Feed) =

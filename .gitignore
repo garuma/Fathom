@@ -294,3 +294,4 @@ packages/
 paket-files/
 node_modules/
 src/Client/public/
+deploy/

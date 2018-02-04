@@ -7,6 +7,8 @@ open Fake
 let serverPath = "./src/Server" |> FullName
 let clientPath = "./src/Client" |> FullName
 
+let deployDir = "./deploy"
+
 let platformTool tool winTool =
   let tool = if isUnix then tool else winTool
   tool
@@ -69,13 +71,48 @@ Target "Run" (fun () ->
   |> ignore
 )
 
+Target "BundleClient" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetCli
+            info.WorkingDirectory <- serverPath
+            info.Arguments <- "publish -c Release -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
+    if result <> 0 then failwith "Publish failed"
+
+    let clientDir = deployDir </> "client"
+    let publicDir = clientDir </> "public"
+    let jsDir = clientDir </> "js"
+    let cssDir = clientDir </> "css"
+    let imageDir = clientDir </> "Images"
+
+    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
+    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
+    !! "src/Client/Images/**/*.*" |> CopyFiles imageDir
+
+    "src/Client/index.html" |> CopyFile clientDir
+)
+
+Target "CreateDockerImage" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.UseShellExecute <- false
+            info.Arguments <- "build .") TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker build failed"
+)
+
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallClient"
   ==> "Build"
+  ==> "BundleClient"
+  ==> "CreateDockerImage"
 
 "InstallClient"
   ==> "RestoreServer"
   ==> "Run"
+
+
 
 RunTargetOrDefault "Build"
