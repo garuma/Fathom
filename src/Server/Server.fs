@@ -19,7 +19,7 @@ open FSharp.Azure.StorageTypeProvider.Table
 [<Literal>]
 let ConnectionString = "..."
 
-type AtomFeed = XmlProvider<"http://blog.neteril.org/feed.xml">
+type AtomFeed = XmlProvider<"http://blog.neteril.org/feed.xml", Encoding="utf-8">
 type Database = AzureTypeProvider<ConnectionString>
 
 type DatabaseEntry =
