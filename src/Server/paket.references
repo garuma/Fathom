@@ -8,3 +8,4 @@ group Server
   Newtonsoft.Json
   Fable.JsonConverter
   FSharp.Azure.StorageTypeProvider
+  System.ServiceModel.Syndication

@@ -21,25 +21,25 @@ open Fulma.BulmaClasses
 open Fulma.BulmaClasses.Bulma
 
 type Model =
-  { Posts: Post list
+  { Feeds: FeedGroup
     SelectedPost: Post option
     PostContent: string option }
 
 type Msg =
-| Init of Result<Post list, exn>
+| Init of Result<FeedGroup, exn>
 | ChangeCurrentPost of Post
 | DisplayContent of Result<string, exn>
 
 let init () = 
   let model =
-    { Posts = List.Empty
+    { Feeds = { Feeds = List.Empty }
       SelectedPost = None
       PostContent = None }
   let cmd' = Cmd.ofAsync
   let cmd =
     Cmd.ofPromise 
-      (fetchAs<Post list> "/api/posts")
-      [] 
+      (fetchAs<FeedGroup> "/api/posts")
+      []
       (Ok >> Init) 
       (Error >> Init)
   model, cmd
@@ -51,7 +51,7 @@ let fetchAsString (url: string) (init: RequestProperties list) : JS.Promise<stri
 let update msg (model : Model) =
   let model' =
     match msg with
-    | Init (Ok posts) -> { model with Posts = posts }
+    | Init (Ok feedGroup) -> { model with Feeds = feedGroup }
     | ChangeCurrentPost post -> { model with SelectedPost = Some post
                                              PostContent = None }
     | DisplayContent (Ok content) -> { model with PostContent = Some content }
@@ -78,8 +78,8 @@ let menuItem label isActive onclick =
              OnClick onclick ]
        [ str label ] ]
 
-let createPostMenuItem (post: Post) selectPost =
-  function
+let createPostMenuItem (post: Post) selectPost (selectedPost: Post option) =
+  match selectedPost with
   | Some currentPost -> menuItem post.Title (currentPost.Id = post.Id) (fun _ -> selectPost post)
   | None -> menuItem post.Title false (fun _ -> selectPost post)
 
@@ -103,9 +103,23 @@ let view (model: Model) dispatch =
             [ Columns.columns [] [
                 Column.column [Column.Width.isOneQuarter]
                   [ Menu.menu []
-                      [ Menu.label [] [ str (sprintf "Posts (%i)" model.Posts.Length) ]
-                        Menu.list []
-                          [ for post in model.Posts do
+                      [ for feed in model.Feeds.Feeds do
+                        yield Menu.label [] [
+                          Level.level [] [
+                            Level.left [] [
+                              Level.item [] [
+                                p [] [ str feed.FeedName ]
+                              ]
+                            ]
+                            Level.right [] [
+                              Level.item [] [
+                                Tag.tag [Tag.customClass "is-rounded"] [ str (feed.Posts.Length.ToString()) ]
+                              ]
+                            ]
+                          ]
+                        ]
+                        yield Menu.list []
+                          [ for post in feed.Posts do
                             yield (createPostMenuItem post selectPost model.SelectedPost) ] ] ]
                 Column.column []
                   (showPost model.SelectedPost model.PostContent) ] ] ] ]

@@ -9,6 +9,7 @@ group Server
   nuget Fable.JsonConverter
   nuget Newtonsoft.Json
   nuget FSharp.Azure.StorageTypeProvider
+  nuget System.ServiceModel.Syndication
 
   clitool Microsoft.DotNet.Watcher.Tools
 
