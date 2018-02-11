@@ -2,7 +2,7 @@
 
 Prototype of an (incomplete) atom feed reader in F# with the [SAFE stack](https://safe-stack.github.io/).
 
-![screenshot](https://neteril.org/~jeremie/fatom-screenshot-shadow3.png)
+![screenshot](https://neteril.org/~jeremie/fatom-screenshot.png)
 
 Pieces used (at least those I touched):
 
