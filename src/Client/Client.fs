@@ -93,36 +93,35 @@ let showPost (post: Post option) content =
 
 let view (model: Model) dispatch =
   let selectPost p = dispatch (ChangeCurrentPost p)
-  div []
-    [ Navbar.navbar [ Navbar.customClass "is-primary" ]
-        [ Navbar.item_div [ ]
-            [ Heading.h2 [ ]
-                [ str "Fathom" ] ] ]
-      Section.section [ ]
-        [ Container.container [Container.isFluid]
-            [ Columns.columns [] [
-                Column.column [Column.Width.isOneQuarter]
-                  [ Menu.menu []
-                      [ for feed in model.Feeds.Feeds do
-                        yield Menu.label [] [
-                          Level.level [] [
-                            Level.left [] [
-                              Level.item [] [
-                                p [] [ str feed.FeedName ]
-                              ]
+  div [Style [ Height "100%"; ]]
+    [ Container.container [Container.isFluid
+                           Container.props [Style [Height "100%"; MarginTop "2em"; MarginBottom "1em" ]] ]
+          [ Columns.columns [Columns.props [Style [Height "100%"; OverflowY "hidden" ]]] [
+              Column.column [Column.Width.isOneQuarter
+                             Column.props [Style [ OverflowY "auto" ]]]
+                [ h1 [Class "main title"] [ str "Fathom" ]
+                  h2 [Class "is-hidden-touch main subtitle"] [ str "An F# feed reader" ]
+                  Menu.menu []
+                    [ for feed in model.Feeds.Feeds do
+                      yield Menu.label [] [
+                        Level.level [] [
+                          Level.left [] [
+                            Level.item [] [
+                              p [] [ str feed.FeedName ]
                             ]
-                            Level.right [] [
-                              Level.item [] [
-                                Tag.tag [Tag.customClass "is-rounded"] [ str (feed.Posts.Length.ToString()) ]
-                              ]
+                          ]
+                          Level.right [] [
+                            Level.item [] [
+                              Tag.tag [Tag.customClass "is-rounded"] [ str (feed.Posts.Length.ToString()) ]
                             ]
                           ]
                         ]
-                        yield Menu.list []
-                          [ for post in feed.Posts do
-                            yield (createPostMenuItem post selectPost model.SelectedPost) ] ] ]
-                Column.column []
-                  (showPost model.SelectedPost model.PostContent) ] ] ] ]
+                      ]
+                      yield Menu.list []
+                        [ for post in feed.Posts do
+                          yield (createPostMenuItem post selectPost model.SelectedPost) ] ] ]
+              Column.column [Column.props [Style [ OverflowY "auto" ]]]
+                (showPost model.SelectedPost model.PostContent) ] ] ]
 
 #if DEBUG
 open Elmish.Debug
